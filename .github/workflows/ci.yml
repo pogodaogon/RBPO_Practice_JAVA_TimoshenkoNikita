@@ -111,8 +111,7 @@ jobs:
         with:
           target: 'http://localhost:8080'
           rules_file_name: 'zap-rules.tsv'
-          allow_issue_writing: false # Отключаем создание Issue
-          fail_action: false # Конвейер будет "зеленым", даже если найдены уязвимости
+          
           
       - name: Upload DAST Baseline Report
         uses: actions/upload-artifact@v4
