@@ -6,8 +6,26 @@ on:
       - main
 
 jobs:
+
+  # ---- НОВАЯ РАБОТА: Поиск секретов ----
+  secret-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # ОЧЕНЬ ВАЖНО: скачиваем всю историю коммитов, чтобы Gitleaks мог проверить весь код
+
+      - name: Run Gitleaks Secret Scanner
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: false # Отключаем загрузку артефакта
+          GITLEAKS_ENABLE_SUMMARY: true
+
   build:
     runs-on: ubuntu-latest
+    needs: secret-scan # КРИТИЧНО: Сборка начнется ТОЛЬКО если secret-scan завершился успешно (без найденных секретов)
     container:
       image: maven:3.9.6-eclipse-temurin-21
     steps:
